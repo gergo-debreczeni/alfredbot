@@ -1,58 +1,76 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <title>Alfredbot by gergo-debreczeni</title>
 
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-    <title>Alfredbot by gergo-debreczeni</title>
   </head>
-
   <body>
-    <header>
-      <div class="inner">
-        <h1>Alfredbot</h1>
-        <h2>Your loyal ChatOps butler.</h2>
-        <a href="https://github.com/gergo-debreczeni/alfredbot" class="button"><small>View project on</small> GitHub</a>
-      </div>
-    </header>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Alfredbot</h1>
+        <p class="header">Your loyal ChatOps butler.</p>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h3>
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/gergo-debreczeni/alfredbot/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/gergo-debreczeni/alfredbot/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/gergo-debreczeni/alfredbot">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/gergo-debreczeni">gergo-debreczeni</a></p>
+
+
+      </header>
+      <section>
+        <h3>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h3>
 
-<p>To install Alfredbot you can either visit <a href="https://slack.com/apps/A2ED8G9J8-alfredbot">https://slack.com/apps/A2ED8G9J8-alfredbot</a> or use the Add to Slack button.
-Once Alfredbot has been added to your team you can deploy the cloudformation stack for setting up roles.
-Alfredbot <em>does NOT and never will</em> store any information about your users. The only reason it needs read access to user profile and channel/groups/usergroups information is to set up role mappings.</p>
+<p>To install Alfredbot you can either visit <a href="https://slack.com/apps/A2ED8G9J8-alfredbot">https://slack.com/apps/A2ED8G9J8-alfredbot</a> or use the Add to Slack button.</p>
+
+<p>Once Alfredbot has been added to your team you can deploy the cloudformation stack for setting up roles.</p>
+
+<p>Alfredbot <em>does NOT and never will</em> store any information about your users. The only reason it needs read access to user profile and channel/groups/usergroups information is to set up role mappings.</p>
 
 <h3>
 <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
 
-<p>Once you have configured the roles you have to add channel/group/usergroup mapping.
-<code>Usage:</code>/alfred-admin  <code>
-Detailed command options:
-</code>/alfred-admin add    <code>
-Example:</code>/alfred-admin add channel general arn:aws:iam:::role/readonly 2<code>
-/alfred-admin remove &lt;type&gt; &lt;name&gt;
-Example:</code>/alfred-admin remove channel general`
-/alfred-admin list</p>
+<p>Once you have configured the roles you have to add channel/group/usergroup mapping.</p>
 
-<p>The priority in the add command is needed so that in cases when the user invoking an aws command belongs to multiple channels that have different roles mapped the most open one would be used.
-Only a slack administrator can use /alfred-admin command to set up mappings. Let's assume he adds the following configuration:
-/alfred-admin add usergroup admins arn:aws:iam:::role/FullAdmin 1
-/alfred-admin add channel ops arn:aws:iam:::role/PowerUser 2
-/alfred-admin add channel general arn:aws:iam:::role/ReadOnly 3
-If Bob belongs to the admins usergroup and is on general channel we want him to have the most open role, hence the one with priority 1 is chosen.</p>
+<p><code>Usage:</code>/alfred-admin  `</p>
+
+<p>Detailed command options:</p>
+
+<p><code>/alfred-admin add &lt;type&gt; &lt;name&gt; &lt;role_arn&gt; &lt;priority&gt;</code></p>
+
+<p>Example: <code>/alfred-admin add channel general arn:aws:iam::&lt;account_number&gt;:role/readonly 2</code></p>
+
+<p>/alfred-admin remove  </p>
+
+<p>Example: <code>/alfred-admin remove channel general</code></p>
+
+<p>/alfred-admin list</p>
+
+<p>The priority in the add command is needed so that in cases when the user invoking an aws command belongs to multiple channels that have different roles mapped the most open one would be used.</p>
+
+<p>Only a slack administrator can use /alfred-admin command to set up mappings.</p>
+
+<p>Let's assume he adds the following configuration:</p>
+
+<p>/alfred-admin add usergroup admins arn:aws:iam:::role/FullAdmin 1</p>
+
+<p>/alfred-admin add channel ops arn:aws:iam:::role/PowerUser 2</p>
+
+<p>/alfred-admin add channel general arn:aws:iam:::role/ReadOnly 3</p>
+
+<p>If Bob belongs to the admins usergroup and is on general channel we want him to have the most open role, hence the one with priority 1 is chosen.</p>
 
 <p>After the slack administrator configured the roles use /alfred-sync start to sync the user permissions with alfredbot.</p>
 
@@ -69,9 +87,11 @@ If Bob belongs to the admins usergroup and is on general channel we want him to 
 <h3>
 <a id="plans-for-the-future" class="anchor" href="#plans-for-the-future" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Plans for the future</h3>
 
-<p>Multi-account support.
-Shell pipes/commands integration.
-Aliases for frequently used commands.</p>
+<p>Multi-account support.</p>
+
+<p>Shell pipes/commands integration.</p>
+
+<p>Aliases for frequently used commands.</p>
 
 <h3>
 <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>
@@ -82,25 +102,12 @@ Aliases for frequently used commands.</p>
 <a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Support or Contact</h3>
 
 <p>Having trouble with Pages? Check out our <a href="https://help.github.com/pages">documentation</a> or <a href="https://github.com/contact">contact support</a> and we’ll help you sort it out.</p>
-        </section>
-
-        <aside id="sidebar">
-          <a href="https://github.com/gergo-debreczeni/alfredbot/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/gergo-debreczeni/alfredbot/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-
-          <p class="repo-owner"><a href="https://github.com/gergo-debreczeni/alfredbot"></a> is maintained by <a href="https://github.com/gergo-debreczeni">gergo-debreczeni</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
     </div>
-
-  
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
   </body>
 </html>
