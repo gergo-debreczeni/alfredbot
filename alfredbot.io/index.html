@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Alfredbot : Your loyal ChatOps butler.">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+    <link rel="stylesheet" href="/fancybox/source/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen"/>
+    <script type="text/javascript" src="/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <link rel="stylesheet" href="/fancybox/source/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css"
+          media="screen"/>
+    <script type="text/javascript" src="/fancybox/source/helpers/jquery.fancybox-buttons.js?v=1.0.5"></script>
+    <script type="text/javascript" src="/fancybox/source/helpers/jquery.fancybox-media.js?v=1.0.6"></script>
+    <link rel="stylesheet" href="/fancybox/source/helpers/jquery.fancybox-thumbs.css?v=1.0.7" type="text/css"
+          media="screen"/>
+    <script type="text/javascript" src="/fancybox/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7"></script>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Alfredbot</title>
+</head>
+
+<body>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#single_1").fancybox({
+            helpers: {
+                title: {
+                    type: 'float'
+                }
+            }
+        });
+
+        $("#single_2").fancybox({
+            openEffect: 'elastic',
+            closeEffect: 'elastic',
+
+            helpers: {
+                title: {
+                    type: 'inside'
+                }
+            }
+        });
+
+        $("#single_3").fancybox({
+            openEffect: 'none',
+            closeEffect: 'none',
+            helpers: {
+                title: {
+                    type: 'outside'
+                }
+            }
+        });
+
+        $("#single_4").fancybox({
+            helpers: {
+                title: {
+                    type: 'over'
+                }
+            }
+        });
+    });
+</script>
+<!-- HEADER -->
+<div id="header_wrap" class="outer">
+    <header class="inner">
+        <a id="forkme_banner" href="https://github.com/gergo-debreczeni/alfredbot">View on GitHub</a>
+
+        <h1 id="project_title">Alfredbot</h1>
+
+        <h2 id="project_tagline">Your loyal ChatOps butler.</h2>
+
+        <a style="border: transparent"
+           href="https://slack.com/oauth/authorize?client_id=78313104160.82450553620&scope=channels%3Aread+groups%3Aread+usergroups%3Aread+users%3Aread+commands"><img
+                style="border: transparent; padding: 0px; margin: 0px;" alt="Add to Slack" height="40" width="139"
+                src="https://platform.slack-edge.com/img/add_to_slack.png"
+                srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"/></a>
+        <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/gergo-debreczeni/alfredbot/zipball/master">Download
+                this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/gergo-debreczeni/alfredbot/tarball/master">Download
+                this project as a tar.gz file</a>
+        </section>
+    </header>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main_content_wrap" class="outer">
+    <section id="main_content" class="inner">
+
+        <h3>
+            <a id="inspiration" class="anchor" href="#inspiration" aria-hidden="true"><span aria-hidden="true"
+                                                                                            class="octicon octicon-link"></span></a>Inspiration
+        </h3>
+
+        <p>Ever since the launch of slack, devOps are so 2015, this is the era of ChatOps!</p>
+
+        <p>What best way to enable slack users to leverage the sheer power of AWS than to bring the CLI to their
+            favourite platform of communication?</p>
+
+        <h3>
+            <a id="whatitdoes" class="anchor" href="#whatitdoes" aria-hidden="true"><span aria-hidden="true"
+                                                                                          class="octicon octicon-link"></span></a>What
+            it does
+        </h3>
+
+        <p>Alfredbot brings the full power of AWS CLI to slack. You can configure granular permissions by associating
+            channels/groups/usergroups with different roles from your AWS account.</p>
+
+        <h3>
+            <a id="whatitdoes" class="anchor" href="#whatitdoes" aria-hidden="true"><span aria-hidden="true"
+                                                                                          class="octicon octicon-link"></span></a>What
+            it does
+        </h3>
+        Alfredbot is split into 4 lambda functions, segregating responsibilities and limiting access to information as
+        follows:
+
+        <p><strong style="font-size:125%">Outsider</strong> - gets triggered as the callback hook from installing
+            Alfredbot to slack, parsing the code queryparam in API gateway. Using the code and client id/secret an oAuth
+            token is generated, KMS encrypted and stored in dynamoDB.</p>
+
+        <p><strong style="font-size:125%">Eagle</strong> - responsible for configuring the mapping between
+            channels/groups/usergroups and AWS roles, only available for slack administrators. The information is saved
+            in dynamoDB.</p>
+
+        <p><strong style="font-size:125%">Thaddeus</strong> - after you're done configuring the mappings, invoke
+            /alfred-sync start to synchronize the users belonging to previously configured channels/groups/usergroups
+            and store them in memcached.</p>
+
+        <p><strong style="font-size:125%">Alfred</strong> - entrypoint for your /alfred-invoke &lt;aws command&gt;,
+            retrieves the role associated with the caller from memcached, assumes it and tries to execute the aws
+            command.</p>
+
+        <h3>
+
+            <a id="demo_video" class="anchor" href="#demo_video" aria-hidden="true"><span aria-hidden="true"
+                                                                                          class="octicon octicon-link"></span></a>Demo
+            video!
+        </h3>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/UjFVMFDDwZc" frameborder="0"
+                allowfullscreen></iframe>
+        <h3>
+
+            <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true"
+                                                                                              class="octicon octicon-link"></span></a>Installation
+        </h3>
+
+        <p>To install Alfredbot you can either visit <a href="https://slack.com/apps/A2ED8G9J8-alfredbot">https://slack.com/apps/A2ED8G9J8-alfredbot</a>
+            or use the Add to Slack button.</p>
+
+        <p>Once Alfredbot has been added to your team you can deploy the cloudformation stack for setting up roles.</p>
+
+        <p>Simply click button and follow instructions:
+            <a href="https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=alfredassumed&templateURL=https://s3-eu-west-1.amazonaws.com/alfredbot-cloudformation/deploy_assumed_roles.json">
+                <img alt="launch stack button"
+                     src="https://cdn.amazonblogs.com/application-management_awsblog/images/cloudformation-launch-stack.png"
+                     style="width: 144px; height: 27px;">
+            </a>
+        </p>
+
+        <p>Alfredbot <strong style="font-size:125%">does NOT and NEVER will</strong> store any personal information
+            about your users. </p>
+
+        <p>The only reason it needs read access to user profile and channel/groups/usergroups information is to set up
+            role mappings.</p>
+
+        <h3>
+            <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true"
+                                                                                                class="octicon octicon-link"></span></a>Configuration
+        </h3>
+
+        <p>Once you have configured the roles you have to add channel/group/usergroup mapping.</p>
+
+        <p>Usage:</p>
+        <code>/alfred-admin </code>
+        <h5>Detailed command options:</h5>
+
+        <hr style="border-top: dotted 1px;"/>
+        <p><code>/alfred-admin add &lt;type&gt; &lt;name&gt; &lt;role_arn&gt; &lt;priority&gt;</code></p>
+
+        <p>Example:</p>
+        <code>/alfred-admin add channel general arn:aws:iam::&lt;account_number&gt;:role/readonly 2</code>
+
+        <p></p>
+
+        <hr style="border-top: dotted 1px;"/>
+        <code>/alfred-admin remove </code>
+
+        <p>Example:</p>
+        <code>/alfred-admin remove channel general</code>
+
+        <p></p>
+
+        <hr style="border-top: dotted 1px;"/>
+        <code>/alfred-admin list</code>
+
+        <hr style="border-top: dotted 1px;"/>
+        <p>The priority in the <code>/alfred-admin add</code>command is needed so that in cases when the user invoking
+            an aws command belongs to multiple channels that have different roles mapped the most open one would be
+            used.</p>
+
+        <p>Only a slack administrator can use /alfred-admin command to set up mappings.</p>
+
+        <p>Let's assume he adds the following configuration:</p>
+
+        <code>/alfred-admin add usergroup admins arn:aws:iam:::role/FullAdmin 1</code>
+
+        <p></p>
+        <code>/alfred-admin add channel ops arn:aws:iam:::role/PowerUser 2</code>
+
+        <p></p>
+        <code>/alfred-admin add channel general arn:aws:iam:::role/ReadOnly 3</code>
+
+        <p>If Bob belongs to the admins usergroup and is on general channel we want him to have the most open role,
+            hence the one with priority 1 is chosen.</p>
+
+        <p>After the slack administrator configured the roles run <code>/alfred-sync start</code> to sync the user
+            permissions with alfredbot.</p>
+        <p><strong style="font-size:110%">Warning:</strong> Sometimes it can take up to a few minutes for IAM role permissions to propagate.</p>
+
+        <h3>
+            <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true"
+                                                                                class="octicon octicon-link"></span></a>Usage
+        </h3>
+
+        <p>After the role mappings have been configured any user can simply invoke</p>
+        <code>/alfred-invoke &lt;aws command&gt </code>
+
+        <h3>
+            <a id="technical-details" class="anchor" href="#technical-details" aria-hidden="true"><span
+                    aria-hidden="true" class="octicon octicon-link"></span></a>Technical diagram</h3>
+
+        <a id="single_1" href="https://alfredbot.io/alfredbot_diagram.png" title="Architectural Diagram">
+            <img src="https://alfredbot.io/alfredbot_diagram.png" alt=""/>
+
+            <h3>
+                <a id="plans-for-the-future" class="anchor" href="#plans-for-the-future" aria-hidden="true"><span
+                        aria-hidden="true" class="octicon octicon-link"></span></a>Plans for the future</h3>
+
+            <p>Multi-account support.</p>
+
+            <p>Shell pipes/commands integration.</p>
+
+            <p>Aliases for frequently used commands.</p>
+
+            <h3>
+                <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors"
+                   aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and
+                Contributors</h3>
+
+            <p><a href="https://github.com/gergo-debreczeni" class="user-mention">@gergo-debreczeni</a> and <a
+                    href="https://github.com/RomekRJM" class="user-mention">@RomekRJM</a> for AWS Serverless Chatbot
+                Competition.</p>
+</div>
+
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer">
+    <footer class="inner">
+        <p class="copyright">Alfredbot maintained by <a href="https://github.com/gergo-debreczeni">gergo-debreczeni</a>
+        </p>
+
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+    </footer>
+</div>
+
+
+</body>
+</html>
