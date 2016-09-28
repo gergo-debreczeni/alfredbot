@@ -1,0 +1,6 @@
+{
+    "description": "Eagle",
+    "function": "eagle", 
+    "language": "python", 
+    "runtime": "python2.7"
+}
