@@ -1,0 +1,6 @@
+{
+    "description": "Outsider",
+    "function": "outsider", 
+    "language": "python", 
+    "runtime": "python2.7"
+}
