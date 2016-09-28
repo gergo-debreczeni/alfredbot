@@ -1,0 +1,76 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+  },
+  "Outputs": {
+    "AlfredAssumedRole": {
+      "Description": "The name of the role lambda function assumes.",
+      "Value": {
+        "Ref": "AlfredAssumedRole"
+      }
+    },
+    "AlfredAssumedRoleArn": {
+      "Description": "The arn of the role lambda function assumes.",
+      "Value": {
+        "Fn::GetAtt": [
+          "AlfredAssumedRole",
+          "Arn"
+        ]
+      }
+    }
+  },
+  "Resources": {
+    "AlfredAssumedRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": [
+                "arn:aws:logs:*:*:*"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "LambdaPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sts:AssumeRole"
+                  ],
+                  "Resource": [
+                    "*"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Description": "Alfred Chatbot stack."
+}

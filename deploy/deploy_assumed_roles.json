@@ -1,0 +1,198 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "AlfredAssumedRoleArn": {
+      "Type": "String",
+      "Description": "Name of the role, that lambda function assumes.",
+      "Default": "arn:aws:iam::226901934642:role/alfredbot-alfred"
+    },
+    "SlackTeamDomain": {
+      "Type": "String",
+      "Description": "team_domain as in slack."
+    },
+    "CreateAdminRole": {
+      "Type": "String",
+      "Default": "yes",
+      "AllowedValues": [
+        "yes",
+        "no"
+      ],
+      "Description": "Enter either yes or no."
+    },
+    "CreateOpsRole": {
+      "Type": "String",
+      "Default": "yes",
+      "AllowedValues": [
+        "yes",
+        "no"
+      ],
+      "Description": "Enter either yes or no."
+    },
+    "CreateReadOnlyRole": {
+      "Type": "String",
+      "Default": "yes",
+      "AllowedValues": [
+        "yes",
+        "no"
+      ],
+      "Description": "Enter either yes or no."
+    }
+  },
+  "Conditions": {
+    "CreateAdminRoleCondition": {
+      "Fn::Equals": [
+        {
+          "Ref": "CreateAdminRole"
+        },
+        "yes"
+      ]
+    },
+    "CreateOpsRoleCondition": {
+      "Fn::Equals": [
+        {
+          "Ref": "CreateOpsRole"
+        },
+        "yes"
+      ]
+    },
+    "CreateReadOnlyRoleCondition": {
+      "Fn::Equals": [
+        {
+          "Ref": "CreateReadOnlyRole"
+        },
+        "yes"
+      ]
+    }
+  },
+  "Outputs": {
+    "ReadOnlyLambdaRoleName": {
+      "Description": "The name of the role lambda function assumes.",
+      "Condition": "CreateReadOnlyRoleCondition",
+      "Value": {
+        "Fn::GetAtt" : ["ReadOnlyLambdaRole", "Arn"]
+      }
+    },
+    "OpsLambdaRoleName": {
+      "Description": "The name of the role lambda function assumes.",
+      "Condition": "CreateOpsRoleCondition",
+      "Value": {
+        "Fn::GetAtt" : ["OpsLambdaRole", "Arn"]
+      }
+    },
+    "AdminLambdaRoleName": {
+      "Description": "The name of the role lambda function assumes.",
+      "Condition": "CreateAdminRoleCondition",
+      "Value": {
+        "Fn::GetAtt" : ["AdminLambdaRole", "Arn"]
+      }
+    }
+  },
+  "Resources": {
+    "ReadOnlyLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "Condition": "CreateReadOnlyRoleCondition",
+      "Properties": {
+        "RoleName":  "alfred-read-only",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/ReadOnlyAccess"
+        ],
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": [
+                  {
+                    "Ref": "AlfredAssumedRoleArn"
+                  }
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "sts:ExternalId": {
+                    "Ref": "SlackTeamDomain"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "OpsLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "Condition": "CreateOpsRoleCondition",
+      "Properties": {
+        "RoleName":  "alfred-poweruser",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/PowerUserAccess"
+        ],
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": [
+                  {
+                    "Ref": "AlfredAssumedRoleArn"
+                  }
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "sts:ExternalId": {
+                    "Ref": "SlackTeamDomain"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "AdminLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "Condition": "CreateAdminRoleCondition",
+      "Properties": {
+        "RoleName":  "alfred-admin",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AdministratorAccess"
+        ],
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": [
+                  {
+                    "Ref": "AlfredAssumedRoleArn"
+                  }
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "sts:ExternalId": {
+                    "Ref": "SlackTeamDomain"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Description": "Alfred Chatbot stack."
+}

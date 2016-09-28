@@ -1,0 +1,142 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "LambdaFunctionName": {
+      "Type": "String",
+      "Description": "Name of bot function."
+    }
+  },
+  "Outputs": {
+    "ApiGatewayRoleName": {
+      "Description": "The name of role, apigateway assumes.",
+      "Value": {
+        "Ref": "ApiGatewayRole"
+      }
+    }
+  },
+  "Resources": {
+    "ApiGatewayRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+        ],
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "apigateway.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "ApiGatewayRestApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Body": {
+          "swagger": "2.0",
+          "info": {
+            "version": "2016-09-10T13:11:41Z",
+            "title": "Slackbot"
+          },
+          "host": "r7h1irf83m.execute-api.eu-west-1.amazonaws.com",
+          "basePath": "/test",
+          "schemes": [
+            "https"
+          ],
+          "paths": {
+            "/": {
+              "post": {
+                "consumes": [
+                  "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                  "application/json"
+                ],
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    }
+                  }
+                },
+                "x-amazon-apigateway-integration": {
+                  "responses": {
+                    "default": {
+                      "statusCode": "200"
+                    }
+                  },
+                  "requestTemplates": {
+                    "application/x-www-form-urlencoded": "## convert HTML POST data or HTTP GET query string to JSON\n\n## get the raw post data from the AWS built-in variable and give it a nicer name\n#if ($context.httpMethod == \"POST\")\n #set($rawAPIData = $input.path('$'))\n#elseif ($context.httpMethod == \"GET\")\n #set($rawAPIData = $input.params().querystring)\n #set($rawAPIData = $rawAPIData.toString())\n #set($rawAPIDataLength = $rawAPIData.length() - 1)\n #set($rawAPIData = $rawAPIData.substring(1, $rawAPIDataLength))\n #set($rawAPIData = $rawAPIData.replace(\", \", \"&\"))\n#else\n #set($rawAPIData = \"\")\n#end\n\n## first we get the number of \"&\" in the string, this tells us if there is more than one key value pair\n#set($countAmpersands = $rawAPIData.length() - $rawAPIData.replace(\"&\", \"\").length())\n\n## if there are no \"&\" at all then we have only one key value pair.\n## we append an ampersand to the string so that we can tokenise it the same way as multiple kv pairs.\n## the \"empty\" kv pair to the right of the ampersand will be ignored anyway.\n#if ($countAmpersands == 0)\n #set($rawPostData = $rawAPIData + \"&\")\n#end\n\n## now we tokenise using the ampersand(s)\n#set($tokenisedAmpersand = $rawAPIData.split(\"&\"))\n\n## we set up a variable to hold the valid key value pairs\n#set($tokenisedEquals = [])\n\n## now we set up a loop to find the valid key value pairs, which must contain only one \"=\"\n#foreach( $kvPair in $tokenisedAmpersand )\n #set($countEquals = $kvPair.length() - $kvPair.replace(\"=\", \"\").length())\n #if ($countEquals == 1)\n  #set($kvTokenised = $kvPair.split(\"=\"))\n  #if ($kvTokenised[0].length() > 0)\n   ## we found a valid key value pair. add it to the list.\n   #set($devNull = $tokenisedEquals.add($kvPair))\n  #end\n #end\n#end\n\n## next we set up our loop inside the output structure \"{\" and \"}\"\n{\n#foreach( $kvPair in $tokenisedEquals )\n  ## finally we output the JSON for this pair and append a comma if this isn't the last pair\n  #set($kvTokenised = $kvPair.split(\"=\"))\n \"$util.urlDecode($kvTokenised[0])\" : #if($kvTokenised[1].length() > 0)\"$util.urlDecode($kvTokenised[1])\"#{else}\"\"#end#if( $foreach.hasNext ),#end\n#end\n}\n"
+                  },
+                  "uri": {
+                    "Fn::Join": [
+                      ":",
+                      [
+                        "arn:aws:apigateway",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "lambda:path/2015-03-31/functions/arn:aws:lambda",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "function",
+                        {
+                          "Fn::Join": [
+                            "/",
+                            [
+                              {
+                                "Ref": "LambdaFunctionName"
+                              },
+                              "invocations"
+                            ]
+                          ]
+                        }
+                      ]
+                    ]
+                  },
+                  "passthroughBehavior": "never",
+                  "httpMethod": "POST",
+                  "type": "aws"
+                }
+              }
+            }
+          },
+          "definitions": {
+            "Empty": {
+              "type": "object",
+              "title": "Empty Schema"
+            }
+          }
+        },
+        "Description": "Rest api definition",
+        "Name": "AlfredApi"
+      }
+    },
+    "ApiGatewayDeployment": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "Description": "Deploys ApiGatewayRestApi to stage test",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "StageName": "test"
+      }
+    }
+  },
+  "Description": "Alfred Chatbot stack."
+}

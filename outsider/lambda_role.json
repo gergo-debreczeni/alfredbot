@@ -1,0 +1,94 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+  },
+  "Outputs": {
+    "OutsiderAssumedRole": {
+      "Description": "The name of the role lambda function assumes.",
+      "Value": {
+        "Ref": "OutsiderAssumedRole"
+      }
+    },
+    "OutsiderAssumedRoleArn": {
+      "Description": "The arn of the role lambda function assumes.",
+      "Value": {
+        "Fn::GetAtt": [
+          "OutsiderAssumedRole",
+          "Arn"
+        ]
+      }
+    }
+  },
+  "Resources": {
+    "OutsiderAssumedRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "OutsiderPolicy",
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:*"
+                  ],
+                  "Resource": [
+                    "arn:aws:dynamodb:*:*:table/alfredbot-*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "arn:aws:logs:*:*:*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "kms:Encrypt",
+                    "kms:Decrypt",
+                    "kms:ReEncrypt*",
+                    "kms:GenerateDataKey*",
+                    "kms:DescribeKey"
+                  ],
+                  "Resource": [
+                    "arn:aws:kms:::alias/alfredbot-token"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:Get*",
+                    "s3:List*"
+                  ],
+                  "Resource": "arn:aws:s3:::alfredbot-configuration/*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Description": "Alfred Chatbot stack."
+}

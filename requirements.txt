@@ -1,0 +1,10 @@
+# Declare requirements for your Python Lambda function here.
+#
+# eg.
+# requests>=2
+# slacker
+awscli
+boto3
+botocore
+lambkin
+virtualenv
