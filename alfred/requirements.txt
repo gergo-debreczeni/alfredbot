@@ -1,0 +1,4 @@
+# Declare requirements for your Python Lambda function here.
+awscli
+pymemcache
+requests

@@ -1,0 +1,6 @@
+{
+    "description": "Alfred", 
+    "function": "alfred", 
+    "language": "python", 
+    "runtime": "python2.7"
+}
