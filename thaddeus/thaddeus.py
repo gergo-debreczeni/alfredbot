@@ -67,7 +67,6 @@ class TeamModel(Model):
 
 
 def get_team_config(team_id):
-    # Grab from dynamoDB, mocking for now
     team_configs = TeamConfigModel.team_id_index.query(team_id)
     return list(team_configs)
 
